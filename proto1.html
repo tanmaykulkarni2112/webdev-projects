@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Image Converter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        header {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px;
+        }
+
+        h1 {
+            font-family: 'Courier New', monospace;
+            margin-bottom: 20px;
+        }
+
+        .converter-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        #imageContainer {
+            margin-top: 20px;
+        }
+
+        #micButton {
+            background-color: #2ecc71;
+        }
+
+        #micButton:hover {
+            background-color: #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>The Image Prompt Generator</h1>
+    </header>
+
+    <div class="converter-container">
+        <label for="textInput">Enter Text:</label>
+        <input type="text" id="textInput">
+        <button onclick="convertToImage()">Convert to Image</button>
+
+        <button id="micButton" onclick="startSpeechRecognition()">
+            <i class="fas fa-microphone"></i> Start Voice Input
+        </button>
+
+        <div id="imageContainer"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <script>
+        async function convertToImage() {
+            const textInput = document.getElementById('textInput').value;
+
+            // Call the function to convert text to image using a free API
+            // Replace 'YOUR_API_KEY' with the actual API key (if required)
+            try {
+                const imageUrl = await convertTextToImage(textInput, 'YOUR_API_KEY');
+
+                // Display the generated image
+                document.getElementById('imageContainer').innerHTML = `<img src="${imageUrl}" alt="Converted Image">`;
+            } catch (error) {
+                console.error('Error converting text to image:', error);
+            }
+        }
+
+        async function convertTextToImage(text, apiKey) {
+            // Use a free API to convert text to image (Example: Lorem Picsum)
+            const apiUrl = `https://picsum.photos/seed/${text}/500/300`;
+
+            try {
+                const response = await fetch(apiUrl);
+
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+
+                const imageUrl = response.url;
+                return imageUrl;
+            } catch (error) {
+                throw new Error(`Failed to fetch image from API: ${error.message}`);
+            }
+        }
+
+        function startSpeechRecognition() {
+            const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+
+            recognition.lang = 'en-US';
+            recognition.start();
+
+            recognition.onresult = function(event) {
+                const speechToText = event.results[0][0].transcript;
+                document.getElementById('textInput').value = speechToText;
+            };
+
+            recognition.onend = function() {
+                console.log('Speech recognition ended.');
+            };
+
+            recognition.onerror = function(event) {
+                console.error('Speech recognition error:', event.error);
+            };
+        }
+    </script>
+</body>
+</html>
